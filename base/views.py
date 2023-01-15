@@ -1,6 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from .models import Room  # Model we want to query
+from .forms import RoomForm
 # Create your views here.
 
 
@@ -26,3 +27,45 @@ def room(request,pk):# Pk is acting like query for database query
     context={'room':room}
 
     return render(request,'base/room.html',context) 
+
+def createRoom(request):
+    form = RoomForm() 
+    if request.method == 'POST':# to Deal with Form submission
+        #request.POST.get('name')
+        form = RoomForm(request.POST)
+        if form.is_valid():# Inbuilt methods to check basic validity
+            form.save()# Backend has been prebuilt
+            return redirect('home')# Using url name for redirection
+
+    context ={'form':form}
+
+    return render(request,'base/room_form.html',context)
+
+def updateRoom(request,pk):
+    room = Room.objects.get(id=pk)# Retrieving a particular object
+
+    form = RoomForm(instance = room) # TO link and prefill the form
+    if request.method == 'POST':# to Deal with Form submission
+        #request.POST.get('name')
+        form = RoomForm(request.POST,instance=room)# For specific room
+        if form.is_valid():# Inbuilt methods to check basic validity
+            form.save()# Backend has been prebuilt
+            return redirect('home')# Using url name for redirection
+
+    
+    context = {'form':form}
+
+    return render(request,'base/room_form.html',context)
+
+def deleteRoom(request,pk):
+    room = Room.objects.get(id=pk)# Retrieving a particular object
+
+    #form = RoomForm(instance = room) # TO link and prefill the form
+    if request.method == 'POST':# to Deal with Form submission
+        room.delete()# Backend has been prebuilt
+        return redirect('home')# Using url name for redirection
+
+    
+    context = {'obj':room}
+
+    return render(request,'base/delete.html',context)
