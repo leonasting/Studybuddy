@@ -3,9 +3,34 @@
 
 {% block content %}
 
+<style>
+    .home-container{
+        display:grid;
+        grid-template-columns: 1fr 3fr; /*1 fraction and 3 fraction*/
+    }
+</style>
+
+<div class="home-container">
+<div><!--Side Bar-->
+    <h3>Browse Topics</h3>
+    <div>
+        <a href = "{% url 'home' %}">ALL</a>
+    </div>
+
+    {% for topic in topics %}
+        <div>
+            <a href = "{% url 'home' %}?q={{topic.name}}">{{topic.name}}</a>
+        </div>
+
+
+    {% endfor %}
+
+
+</div>
 <!-- {% include "navbar.html" %} -->
-<h1>Home Template</h1>
-<div>
+
+<div><!-- Feed Area-->
+    <h5>{{room_count}} rooms available</h5>
     <a href="{% url 'create-room' %}">Create Room</a>
     <div>
     {% for room in rooms %}
@@ -25,5 +50,5 @@
     </div> 
 
 </div>
-
+</div>
 {% endblock %}

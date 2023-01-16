@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
+from django.db.models import Q
 from django.http import HttpResponse
-from .models import Room  # Model we want to query
+from .models import Room,Topic # Model we want to query
 from .forms import RoomForm
 # Create your views here.
 
@@ -14,8 +15,26 @@ rooms = [
  
 
 def home(request):
-    rooms = Room.objects.all() # Overwrites the earlier defination of rooms
-    context = {'rooms' : rooms}
+    q = request.GET.get('q')# To retieve the querried parameter
+    if not q:
+        q=''
+    #rooms = Room.objects.all() # Overwrites the earlier defination of rooms
+    #rooms = Room.objects.filter(topic__name=q)# __ Query to the Parent
+    rooms = Room.objects.filter(
+        Q(topic__name__icontains=q) |#OR
+        Q(name__icontains=q) |
+        Q(description__icontains=q)
+        
+        )# __ Query to the Parent
+
+    room_count = rooms.count()# Method to retrieve value based on fiter and its faster than len
+    # For Populating topics
+    topics = Topic.objects.all()# To retrieve the topics
+
+    context = {'rooms' : rooms,
+               'topics': topics,
+               'room_count':room_count,
+                }
     return render(request,'base/home.html',context) # Passing dictionary key value pair
 
 def room(request,pk):# Pk is acting like query for database query
@@ -63,7 +82,7 @@ def deleteRoom(request,pk):
     #form = RoomForm(instance = room) # TO link and prefill the form
     if request.method == 'POST':# to Deal with Form submission
         room.delete()# Backend has been prebuilt
-        return redirect('home')# Using url name for redirection
+        return redirect('home ')# Using url name for redirection
 
     
     context = {'obj':room}
