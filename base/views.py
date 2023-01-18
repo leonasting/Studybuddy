@@ -13,6 +13,18 @@ rooms = [
         {"id":3, "name":'Front End Developers '},
         ]
  
+def loginPage(request):
+    
+    if request.method == 'POST':
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        try:
+            user = User.objects.get(username=username)
+        except:
+            pass
+    context={}
+    return render(request,"base/login_register.html",context)
 
 def home(request):
     q = request.GET.get('q')# To retieve the querried parameter
