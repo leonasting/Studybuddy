@@ -1,8 +1,12 @@
 from django.shortcuts import render,redirect
-from django.db.models import Q
-from django.http import HttpResponse
+from django.contrib import messages
+from django.db.models import Q # loop up
+#from django.http import HttpResponse # Used earlier 
+from django.contrib.auth.models import User # Importing User for Login
+from django.contrib.auth import authenticate, login, logout
 from .models import Room,Topic # Model we want to query
 from .forms import RoomForm
+
 # Create your views here.
 
 
@@ -22,9 +26,21 @@ def loginPage(request):
         try:
             user = User.objects.get(username=username)
         except:
-            pass
+            messages.error(request,'user does not exist')
+        user = authenticate(request,username=username,password=password) 
+
+        if user is not None:
+            login(request,user)
+            return redirect('home')
+        else:
+            messages.error(request,'User does not exist')
+             
+
     context={}
     return render(request,"base/login_register.html",context)
+
+def logoutUser(request):
+    return redirect('home')
 
 def home(request):
     q = request.GET.get('q')# To retieve the querried parameter

@@ -10,6 +10,15 @@
 </head>
 <body>
     {% include "navbar.html" %}
+    <!-- Added for displaying messages-->
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li>{{ message }}</li><!--Message tags removed-->
+        {% endfor %}
+    </ul>
+    {% endif %}
+
 
     {% block content %}
     
