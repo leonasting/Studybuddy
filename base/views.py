@@ -1,9 +1,10 @@
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.db.models import Q # loop up
-#from django.http import HttpResponse # Used earlier 
+from django.http import HttpResponse # Used earlier again added for Restricted Page implementaion 
 from django.contrib.auth.models import User # Importing User for Login
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout # Login and logout 
+from django.contrib.auth.decorators import login_required# For Restricted Pages
 from .models import Room,Topic # Model we want to query
 from .forms import RoomForm
 
@@ -18,7 +19,9 @@ rooms = [
         ]
  
 def loginPage(request):
-    
+    if request.user.is_authenticated: # To safeguard from relogin of user form manual link usage
+        return redirect('home')
+
     if request.method == 'POST':
         username = request.POST.get("username")
         password = request.POST.get("password")
@@ -76,6 +79,7 @@ def room(request,pk):# Pk is acting like query for database query
 
     return render(request,'base/room.html',context) 
 
+@login_required(login_url='login')
 def createRoom(request):
     form = RoomForm() 
     if request.method == 'POST':# to Deal with Form submission
@@ -89,10 +93,14 @@ def createRoom(request):
 
     return render(request,'base/room_form.html',context)
 
+@login_required(login_url='login')
 def updateRoom(request,pk):
     room = Room.objects.get(id=pk)# Retrieving a particular object
 
     form = RoomForm(instance = room) # TO link and prefill the form
+    if request.user != room.host: # Restrict User who are not the owner
+        return HttpResponse("You dont have the permissions!!")
+
     if request.method == 'POST':# to Deal with Form submission
         #request.POST.get('name')
         form = RoomForm(request.POST,instance=room)# For specific room
@@ -105,10 +113,15 @@ def updateRoom(request,pk):
 
     return render(request,'base/room_form.html',context)
 
+
+@login_required(login_url='login')
 def deleteRoom(request,pk):
     room = Room.objects.get(id=pk)# Retrieving a particular object
 
     #form = RoomForm(instance = room) # TO link and prefill the form
+    if request.user != room.host: # Restrict User who are not the owner
+        return HttpResponse("You dont have the permissions!!")
+
     if request.method == 'POST':# to Deal with Form submission
         room.delete()# Backend has been prebuilt
         return redirect('home ')# Using url name for redirection
