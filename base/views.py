@@ -1,3 +1,4 @@
+from email import message
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.db.models import Q # loop up
@@ -5,6 +6,7 @@ from django.http import HttpResponse # Used earlier again added for Restricted P
 from django.contrib.auth.models import User # Importing User for Login
 from django.contrib.auth import authenticate, login, logout # Login and logout 
 from django.contrib.auth.decorators import login_required# For Restricted Pages
+from django.contrib.auth.forms import UserCreationForm # For User Registation
 from .models import Room,Topic # Model we want to query
 from .forms import RoomForm
 
@@ -19,11 +21,13 @@ rooms = [
         ]
  
 def loginPage(request):
+    page = "login"# For User Registation segrattion from login
+    
     if request.user.is_authenticated: # To safeguard from relogin of user form manual link usage
         return redirect('home')
 
     if request.method == 'POST':
-        username = request.POST.get("username")
+        username = request.POST.get("username").lower()# To convert to lower case
         password = request.POST.get("password")
 
         try:
@@ -39,12 +43,33 @@ def loginPage(request):
             messages.error(request,'User does not exist')
              
 
-    context={}
+    context={"page":page}
     return render(request,"base/login_register.html",context)
 
 def logoutUser(request):
     logout(request)
     return redirect('home')
+
+def registerUser(request):
+    #page="register"
+    form = UserCreationForm()
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user=form.save(commit=False)# saving form and saving in time . TO access user right away
+            # Reason to clean the data (Capital,rtc)
+            user.username = user.username.lower()# To convert to lower case
+            user.save()# To save the user
+            login(request,user)
+            return redirect('home')
+        else:
+            messages.error(request,"An error occured during registation.")
+
+           
+    context={"form":form}
+    return render(request,"base/login_register.html",context) 
+
+
 
 def home(request):
     q = request.GET.get('q')# To retieve the querried parameter
