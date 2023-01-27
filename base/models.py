@@ -13,7 +13,7 @@ class Room(models.Model):
     topic = models.ForeignKey(Topic,on_delete = models.SET_NULL,null=True)# allowing empty values in DB
     name = models.CharField(max_length=200)
     description = models.TextField(null = True,blank = True) # Null is for databse having empty, blacnk is for form field
-    #participants =  # If you comment on something
+    participants = models.ManyToManyField(User,related_name="participants",blank=True) # If you comment on something
     updated = models.DateTimeField(auto_now=True) # Latest Interaction captured
     created = models.DateTimeField(auto_now_add=True) # First Interaction captured
 

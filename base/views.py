@@ -7,7 +7,7 @@ from django.contrib.auth.models import User # Importing User for Login
 from django.contrib.auth import authenticate, login, logout # Login and logout 
 from django.contrib.auth.decorators import login_required# For Restricted Pages
 from django.contrib.auth.forms import UserCreationForm # For User Registation
-from .models import Room,Topic # Model we want to query
+from .models import Room,Topic, Message # Model we want to query
 from .forms import RoomForm
 
 # Create your views here.
@@ -100,7 +100,18 @@ def room(request,pk):# Pk is acting like query for database query
     #    if i["id"] == int(pk):
     #        room = i
     room = Room.objects.get(id=pk)
-    context={'room':room}
+    room_messages = room.message_set.all().order_by('-created')# To retrieve all the messages for a particular room
+    participants = room.participants.all()# To retrieve all the participants for a particular room
+    if request.method == 'POST':
+        message = Message.objects.create(
+            user = request.user,
+            room = room,
+            body = request.POST.get('body')
+        )
+        room.participants.add(request.user)# To add the user to the participants   
+        return redirect('room',pk=room.id)# To redirect to the same page and reload after the request
+
+    context={'room':room,'room_messages':room_messages,'participants':participants}
 
     return render(request,'base/room.html',context) 
 
@@ -153,5 +164,23 @@ def deleteRoom(request,pk):
 
     
     context = {'obj':room}
+
+    return render(request,'base/delete.html',context)
+
+
+@login_required(login_url='login')
+def deleteMessage(request,pk):
+    message = Message.objects.get(id=pk)# Retrieving a particular object
+
+    #form = RoomForm(instance = room) # TO link and prefill the form
+    if request.user != message.user: # Restrict User who are not the owner
+        return HttpResponse("You dont have the permissions!!")
+
+    if request.method == 'POST':# to Deal with Form submission
+        message.delete()# Backend has been prebuilt
+        return redirect('home')# Using url name for redirection
+
+    
+    context = {'obj':message}
 
     return render(request,'base/delete.html',context)
