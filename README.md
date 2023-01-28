@@ -16,13 +16,13 @@ This Repository has been developed based on following links.
 
 --> Clone the repository using the command below :
 ```bash
-git clone https://github.com/divanov11/StudyBud.git
+git clone https://github.com/leonasting/Studybuddy.git
 
 ```
 
 --> Move into the directory where we have the project files : 
 ```bash
-cd StudyBud
+cd StudyBuddy
 
 ```
 
