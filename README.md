@@ -3,7 +3,7 @@
 # About Repository
 This Repository has been developed based on following links.
 
-* Youtube - Travis Media - [Django 7 hour Course by Dennis Ivy ](https://www.youtube.com/watch?v=PtQiiknWUcI)
+* Youtube - Travis Media - [Django 7 hour Course by Dennis Ivy ](https://youtu.be/PtQiiknWUcI)
 * Github[Repositry](https://github.com/divanov11/StudyBud.git)
 
 <div align="center">
