@@ -87,10 +87,11 @@ def home(request):
     room_count = rooms.count()# Method to retrieve value based on fiter and its faster than len
     # For Populating topics
     topics = Topic.objects.all()# To retrieve the topics
-
+    room_messages = Message.objects.filter(Q(room__topic__name__icontains=q))#all()#.order_by('-created')# To retrieve all the messages for a particular room
     context = {'rooms' : rooms,
                'topics': topics,
                'room_count':room_count,
+               'room_messages':room_messages,
                 }
     return render(request,'base/home.html',context) # Passing dictionary key value pair
 

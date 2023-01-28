@@ -30,6 +30,9 @@ class Message(models.Model):# Many to 1 with Room
     updated = models.DateTimeField(auto_now=True) # Latest Interaction captured
     created = models.DateTimeField(auto_now_add=True) # First Interaction captured
 
+    class Meta:
+        ordering = ['-updated','-created'] # Negative for inverse ordering
+
     def __str__(self): # TO represent only the first 50 characters
         return self.body[:50]
 

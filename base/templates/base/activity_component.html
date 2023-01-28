@@ -1,0 +1,15 @@
+<h3>Recent Activity</h3>
+    {% for message in room_messages %}
+        <div>
+            
+            <small>Replied to <a href="{% url 'room' message.room.id %}">{{message.room.name}}</a></small>
+            <small>@{{message.user}} {{message.created|timesince}} ago</small>
+            <p>{{message}}</p> <!-- Only 50 Characters based on represented-->
+            {% if request.user == message.user %}
+            <a href="{% url 'delete-message' message.id %}">Delete</a>
+            {% endif %}
+            <hr><!--Line Break for card segregation-->
+        </div>
+
+
+    {% endfor %}
