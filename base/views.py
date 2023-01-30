@@ -116,6 +116,21 @@ def room(request,pk):# Pk is acting like query for database query
 
     return render(request,'base/room.html',context) 
 
+def userProfile(request,pk):
+    user = User.objects.get(id=pk)
+    rooms = user.room_set.all()# To retrieve all the rooms for a particular user (children relationship)
+    topics = Topic.objects.all()# To retrieve the topics
+    room_message = user.message_set.all()# To retrieve all the messages for a particular user (children relationship)
+    context={'user':user,
+            'rooms':rooms,
+            'topics':topics,
+            'room_messages':room_message}# For the Feed Component
+    return render(request,'base/profile.html',context) 
+
+
+
+
+
 @login_required(login_url='login')
 def createRoom(request):
     form = RoomForm() 
