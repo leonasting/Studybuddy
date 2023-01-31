@@ -138,7 +138,10 @@ def createRoom(request):
         #request.POST.get('name')
         form = RoomForm(request.POST)
         if form.is_valid():# Inbuilt methods to check basic validity
-            form.save()# Backend has been prebuilt
+            room = form.save(commit=False)# To save the form and get the instance
+            room.host = request.user# To link the user to the room
+            room.save()
+            #form.save()# Backend has been prebuilt
             return redirect('home')# Using url name for redirection
 
     context ={'form':form}
