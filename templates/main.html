@@ -1,29 +1,35 @@
 <!DOCTYPE html>
 {% load static %}
-<html>
-<head>
-    <meta charset='utf-8'>
-    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-    <title>StudyBuddy</title>
-    <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <link rel='stylesheet' type='text/css' media='screen' href='{% static "styles\main.css" %}'><!-- To link with static css-->
-    <!--<script src='main.js'></script>-->
-</head>
-<body>
-    {% include "navbar.html" %}
-    <!-- Added for displaying messages-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="assets/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href='{% static "styles\style.css" %}' />
+    <title>StudyBuddy - Find study partners around the world!</title>
+  </head>
+
+  <body>
+        {% include "navbar.html" %}
+
     {% if messages %}
-    <ul class="messages">
+    <ul class="messages"> <!-- Flash Messages -->
         {% for message in messages %}
         <li>{{ message }}</li><!--Message tags removed-->
         {% endfor %}
     </ul>
     {% endif %}
 
-    <!--<img src="{% static 'images/data modeling techniques.png'  %}"/>-->
+
 
     {% block content %}
     
     {% endblock %}
-</body>
-</html> 
+
+    <script src="{% static 'js/script.js' %}"></script>
+  </body>
+</html>
+
+
+
