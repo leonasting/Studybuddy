@@ -134,37 +134,61 @@ def userProfile(request,pk):
 @login_required(login_url='login')
 def createRoom(request):
     form = RoomForm() 
+    topics = Topic.objects.all()# To retrieve the topics
     if request.method == 'POST':# to Deal with Form submission
         #request.POST.get('name')
-        form = RoomForm(request.POST)
-        if form.is_valid():# Inbuilt methods to check basic validity
+        #form = RoomForm(request.POST) Removed in theme installation
+        topic_name = request.POST.get('topic')
+        topic,created = Topic.objects.get_or_create(name=topic_name) # topic Object and created boolean
+        Room.objects.create(
+            name = request.POST.get('name'),
+            description = request.POST.get('description'),
+            topic = topic,
+            host = request.user
+        )# To create a room
+
+
+        """
+         if form.is_valid():# Inbuilt methods to check basic validity
             room = form.save(commit=False)# To save the form and get the instance
             room.host = request.user# To link the user to the room
             room.save()
             #form.save()# Backend has been prebuilt
-            return redirect('home')# Using url name for redirection
+            return redirect('home')# Using url name for redirection 
+        """
+        return redirect('home')
 
-    context ={'form':form}
+    context ={'form':form,
+              'topics':topics}
 
     return render(request,'base/room_form.html',context)
 
 @login_required(login_url='login')
 def updateRoom(request,pk):
     room = Room.objects.get(id=pk)# Retrieving a particular object
-
+    topics = Topic.objects.all()# To retrieve the topics
     form = RoomForm(instance = room) # TO link and prefill the form
     if request.user != room.host: # Restrict User who are not the owner
         return HttpResponse("You dont have the permissions!!")
 
     if request.method == 'POST':# to Deal with Form submission
         #request.POST.get('name')
-        form = RoomForm(request.POST,instance=room)# For specific room
+        topic_name = request.POST.get('topic')
+        topic,created = Topic.objects.get_or_create(name=topic_name) # topic Object and created boolean
+        room.name = request.POST.get('name')
+        room.topic = topic
+        room.description = request.POST.get('description')
+        room.save()
+        return redirect('home')# Using url name for redirection
+        """ form = RoomForm(request.POST,instance=room)# For specific room
         if form.is_valid():# Inbuilt methods to check basic validity
             form.save()# Backend has been prebuilt
-            return redirect('home')# Using url name for redirection
+            return redirect('home')# Using url name for redirection """
 
     
-    context = {'form':form}
+    context = {'form':form,
+               'topics':topics,
+               'room':room}
 
     return render(request,'base/room_form.html',context)
 
@@ -190,14 +214,14 @@ def deleteRoom(request,pk):
 @login_required(login_url='login')
 def deleteMessage(request,pk):
     message = Message.objects.get(id=pk)# Retrieving a particular object
-
+    room_id = message.room.id
     #form = RoomForm(instance = room) # TO link and prefill the form
     if request.user != message.user: # Restrict User who are not the owner
         return HttpResponse("You dont have the permissions!!")
 
     if request.method == 'POST':# to Deal with Form submission
         message.delete()# Backend has been prebuilt
-        return redirect('home')# Using url name for redirection
+        return redirect('room',room_id)# Using url name and id for redirection
 
     
     context = {'obj':message}
