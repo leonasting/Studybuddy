@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, login, logout # Login and logout
 from django.contrib.auth.decorators import login_required# For Restricted Pages
 from django.contrib.auth.forms import UserCreationForm # For User Registation
 from .models import Room,Topic, Message # Model we want to query
-from .forms import RoomForm
+from .forms import RoomForm, UserForm # Form we want to use
 
 # Create your views here.
 
@@ -203,7 +203,7 @@ def deleteRoom(request,pk):
 
     if request.method == 'POST':# to Deal with Form submission
         room.delete()# Backend has been prebuilt
-        return redirect('home ')# Using url name for redirection
+        return redirect('home')# Using url name for redirection
 
     
     context = {'obj':room}
@@ -227,3 +227,15 @@ def deleteMessage(request,pk):
     context = {'obj':message}
 
     return render(request,'base/delete.html',context)
+
+@login_required(login_url='login')
+def updateUser(request):# No Id as User will be the logged in User
+    user=request.user
+    form = UserForm(instance=user)
+    context={'form':form}
+    if request.method == 'POST':
+        form = UserForm(request.POST,instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('user-profile',pk=user.id)
+    return render(request,'base/update_user.html',context)
