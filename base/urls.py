@@ -12,5 +12,7 @@ urlpatterns = [path("login/",views.loginPage,name="login"),
                 path("delete-room/<str:pk>/",views.deleteRoom,name="delete-room"),# 
                 path("delete-message/<str:pk>/",views.deleteMessage,name="delete-message"),#
                 path("update-user/",views.updateUser,name="update-user"),# Update User Profile
+                path("topics/",views.topicsPage,name="topics"),# topics Page mobile version
+                path("activity/",views.activityPage,name="activity"),# activity Page mobile version
                 
                               ]

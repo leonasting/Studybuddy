@@ -86,7 +86,7 @@ def home(request):
 
     room_count = rooms.count()# Method to retrieve value based on fiter and its faster than len
     # For Populating topics
-    topics = Topic.objects.all()# To retrieve the topics
+    topics = Topic.objects.all()[:5]# To retrieve the topics
     room_messages = Message.objects.filter(Q(room__topic__name__icontains=q))#all()#.order_by('-created')# To retrieve all the messages for a particular room
     context = {'rooms' : rooms,
                'topics': topics,
@@ -239,3 +239,22 @@ def updateUser(request):# No Id as User will be the logged in User
             form.save()
             return redirect('user-profile',pk=user.id)
     return render(request,'base/update_user.html',context)
+
+
+def topicsPage(request):
+    q = request.GET.get('q')# To retieve the querried parameter
+    if not q:
+        q=''
+    rooms = Room.objects.filter(
+        Q(topic__name__icontains=q)         
+        )# __ Query to the Parent
+    topics = Topic.objects.filter(name__icontains=q)# To retrieve the topics
+    context={'topics':topics,
+            'rooms':rooms,
+            'q':q}
+    return render(request,'base/topics.html',context)
+
+def activityPage(request):
+    room_messages = Message.objects.all()#all()#.order_by('-created')# To retrieve all the messages for a particular room
+    context={'room_messages':room_messages}
+    return render(request,'base/activity.html',context)
