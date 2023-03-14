@@ -92,6 +92,8 @@ def home(request):
                'topics': topics,
                'room_count':room_count,
                'room_messages':room_messages,
+               'room_count':room_count,
+
                 }
     return render(request,'base/home.html',context) # Passing dictionary key value pair
 
@@ -118,13 +120,15 @@ def room(request,pk):# Pk is acting like query for database query
 
 def userProfile(request,pk):
     user = User.objects.get(id=pk)
+    room_count = Room.objects.all().count()# To retieve the total count for topic component.
     rooms = user.room_set.all()# To retrieve all the rooms for a particular user (children relationship)
     topics = Topic.objects.all()# To retrieve the topics
     room_message = user.message_set.all()# To retrieve all the messages for a particular user (children relationship)
     context={'user':user,
             'rooms':rooms,
             'topics':topics,
-            'room_messages':room_message}# For the Feed Component
+            'room_messages':room_message,# For the Feed Component
+            'room_count':room_count}
     return render(request,'base/profile.html',context) 
 
 
